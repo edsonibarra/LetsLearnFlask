@@ -35,6 +35,16 @@ def get_incomes():
     
 @app.route("/incomes", methods=["POST"])
 def add_income():
-    expense = ExpenseSchema().load(request.get_json())
-    transactions.append(expense)
+    income = IncomeSchema().load(request.get_json())
+    transactions.append(income)
     return "", 204
+
+
+@app.route("/expenses")
+def get_expenses():
+    schema = ExpenseSchema(many=True)
+    expenses = schema.dump(
+        filter(lambda t: t.type_ == TransactionType.EXPENSE, transactions)
+    )
+    return jsonify(expenses)
+
