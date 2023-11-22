@@ -1,5 +1,8 @@
 import json
 from flask import Flask, jsonify, request
+from models.expense import Expense, ExpenseSchema
+from models.income import Income, IncomeSchema
+from models.transaction_type import TransactionType
 
 
 """
@@ -7,8 +10,11 @@ To run the server:
     - flask run
 """
 
-incomes = [
-    {"description": "salary", "amount": 5000}
+transactions = [
+    Income("Salary", 1000),
+    Income("Dividens", 3000),
+    Expense("Pizza", 23),
+    Expense("Rock Concert", 150)
 ]
 
 
@@ -21,9 +27,14 @@ def hello_world():
 
 @app.route("/incomes")
 def get_incomes():
+    schema = IncomeSchema(many=True)
+    incomes = schema.dump(
+        filter(lambda t: t.type_ == TransactionType.INCOME, transactions)
+    )
     return jsonify(incomes)
-
+    
 @app.route("/incomes", methods=["POST"])
 def add_income():
-    incomes.append(request.get_json())
+    expense = ExpenseSchema().load(request.get_json())
+    transactions.append(expense)
     return "", 204
