@@ -48,3 +48,8 @@ def get_expenses():
     )
     return jsonify(expenses)
 
+@app.route("/expenses", methods=["POST"])
+def add_expense():
+    expense = ExpenseSchema().load(request.get_json())
+    transactions.append(expense)
+    return "", 204
